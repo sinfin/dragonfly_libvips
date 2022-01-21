@@ -13,7 +13,7 @@ module DragonflyLibvips
         when do_not_resize?
           OpenStruct.new(width: orig_w, height: orig_h, scale: 1)
         when fill_area?
-          OpenStruct.new(width: width, height: height, scale: scale_to_fill)
+          OpenStruct.new(width: fill_width, height: fill_height)
         when crop?
           OpenStruct.new(width: width, height: height, x: xoffset, y: yoffset, scale: scale)
         else
@@ -51,12 +51,7 @@ module DragonflyLibvips
       orig_h.to_f / geom_h
     end
 
-    def scale_to_fill
-      1.0 / min(horizontal_scale, vertical_scale)
-    end
-
     def xoffset
-
       case gravity
         when /c/
           (orig_w - width) / 2
@@ -133,7 +128,7 @@ module DragonflyLibvips
     end
 
     def fill_area?
-      modifiers&.include?('\^')
+      modifiers&.include?('^')
     end
 
     def ignore_aspect_ratio?
@@ -142,6 +137,20 @@ module DragonflyLibvips
 
     def crop?
       gravity || !(x_offset.zero? && y_offset.zero?)
+    end
+
+    def fill_width
+      if orig_w.to_f / orig_h.to_f > dimensions.width / dimensions.height
+        # original is wider than the required crop rectangle -> reduce height
+        orig_w.to_f * dimensions.height / orig_h.to_f
+      else
+        # original is narrower than the required crop rectangle -> reduce width
+        dimensions.width
+      end
+    end
+
+    def fill_height
+      fill_width * orig_h.to_f / orig_w.to_f
     end
   end
 end

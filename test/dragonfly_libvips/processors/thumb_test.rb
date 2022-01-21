@@ -82,8 +82,20 @@ describe DragonflyLibvips::Processors::Thumb do
     describe 'NNXNN^' do
       describe 'fill area' do
         before { processor.call(image, '200x300^')}
-        it { _(image).must_have_width 237 }
+        it { _(image).must_have_width (300.0 / 355.0 * 280.0).ceil }
         it { _(image).must_have_height 300 }
+      end
+
+      describe 'fill area for both dimensions bigger with a different ratio' do
+        before { processor.call(image, '500x400^')}
+        it { _(image).must_have_width 500 }
+        it { _(image).must_have_height (500.0 / 280.0 * 355.0).ceil }
+      end
+
+      describe 'fill area square' do
+        before { processor.call(image, '100x100^')}
+        it { _(image).must_have_width 100 }
+        it { _(image).must_have_height (100.0 / 280.0 * 355.0).ceil }
       end
     end
   end

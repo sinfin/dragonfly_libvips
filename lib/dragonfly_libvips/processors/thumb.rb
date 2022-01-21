@@ -36,7 +36,10 @@ module DragonflyLibvips
               thumbnail_options.except!(:height, :size, :no_rotate)
               img.crop(dimensions.x, dimensions.y, dimensions.width, dimensions.height, **thumbnail_options)
             else
-              thumbnail_options[:crop] = :centre if geometry.match( /\^/)
+              if geometry.include?('^')
+                thumbnail_options.delete(:crop)
+                thumbnail_options[:size] = :both
+              end
               img.thumbnail_image(dimensions.width.ceil, **thumbnail_options)
           end
         end
