@@ -4,8 +4,11 @@ require 'vips'
 module DragonflyLibvips
   module Processors
     class Thumb
+      CROP_OPERATOR = '#'.freeze
       OPERATORS = '><'.freeze
-      RESIZE_GEOMETRY = /\A\d*x\d*[#{OPERATORS}]?\z/ # e.g. '300x200>'
+
+      RESIZE_GEOMETRY = Regexp.union(/\A\d*x\d*[#{OPERATORS}]?\z/, # e.g. 300x200> or x200
+                                     /\A\d+x\d+#{CROP_OPERATOR}\z/) # e.g. 150x150#
       DPI = 300
 
       def call(content, geometry, options = {})
@@ -59,6 +62,9 @@ module DragonflyLibvips
                                      when /<\z/ then :up # do_not_resize_if_image_larger_than_requested
                                      else :both
         end
+
+
+        thumbnail_options['crop'] = options.fetch(:crop, :attention) if dimensions[:crop]
 
         filename += "[page=#{input_options[:page]}]" if content.mime_type == 'application/pdf'
 

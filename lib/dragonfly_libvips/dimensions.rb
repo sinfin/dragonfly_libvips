@@ -5,6 +5,7 @@ module DragonflyLibvips
     end
 
     def call
+      return OpenStruct.new(width: dimensions.width, height: dimensions.height, crop: true) if crop_image?
       return OpenStruct.new(width: orig_w, height: orig_h, scale: 1) if do_not_resize_if_image_smaller_than_requested? || do_not_resize_if_image_larger_than_requested?
       OpenStruct.new(width: width, height: height, scale: scale)
     end
@@ -57,13 +58,17 @@ module DragonflyLibvips
     end
 
     def do_not_resize_if_image_smaller_than_requested?
-      return false unless geometry.include? '>'
+      return false unless geometry.end_with? '>'
       orig_w < width && orig_h < height
     end
 
     def do_not_resize_if_image_larger_than_requested?
-      return false unless geometry.include? '<'
+      return false unless geometry.end_with? '<'
       orig_w > width && orig_h > height
+    end
+
+    def crop_image?
+      geometry.end_with? '#'
     end
   end
 end

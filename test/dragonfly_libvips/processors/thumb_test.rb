@@ -10,6 +10,7 @@ describe DragonflyLibvips::Processors::Thumb do
   let(:gif) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample.gif')) }
   let(:anim_gif) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_anim.gif')) }
   let(:landscape_image) { Dragonfly::Content.new(app, SAMPLES_DIR.join('landscape_sample.png')) } # 355x280
+  let(:square_image) { Dragonfly::Content.new(app, SAMPLES_DIR.join('square_sample.png')) } # 355x280
   let(:processor) { DragonflyLibvips::Processors::Thumb.new }
 
   it 'raises an error if an unrecognized string is given' do
@@ -40,6 +41,30 @@ describe DragonflyLibvips::Processors::Thumb do
       before { processor.call(image, '30x30') }
       it { image.must_have_width 24 }
       it { image.must_have_height 30 }
+    end
+
+    describe 'NNxNN# - bigger than original' do
+      before { processor.call(image, '500x500#') }
+      it { image.must_have_width 500 }
+      it { image.must_have_height 500 }
+    end
+
+    describe 'NNxNN# - portrait' do
+      before { processor.call(image, '20x20#') }
+      it { image.must_have_width 20 }
+      it { image.must_have_height 20 }
+    end
+
+    describe 'NNxNN# - landscape' do
+      before { processor.call(landscape_image, '20x20#') }
+      it { landscape_image.must_have_width 20 }
+      it { landscape_image.must_have_height 20 }
+    end
+
+    describe 'NNxNN# - square' do
+      before { processor.call(landscape_image, '20x20#') }
+      it { landscape_image.must_have_width 20 }
+      it { landscape_image.must_have_height 20 }
     end
 
     describe 'NNxNN>' do
