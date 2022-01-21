@@ -33,7 +33,7 @@ module DragonflyLibvips
               thumbnail_options[:yshrink] = dimensions.y_scale
               img.shrink(dimensions.x_scale, dimensions.y_scale, **thumbnail_options)
             when :crop
-              thumbnail_options.except!(:height, :size)
+              thumbnail_options.except!(:height, :size, :no_rotate)
               img.crop(dimensions.x, dimensions.y, dimensions.width, dimensions.height, **thumbnail_options)
             else
               thumbnail_options[:crop] = :centre if geometry.match( /\^/)
