@@ -61,6 +61,12 @@ describe DragonflyLibvips::Processors::Thumb do
       it { landscape_image.must_have_height 20 }
     end
 
+    describe 'NNxNN# - crop_x_ratio and crop_y_ratio' do
+      before { processor.call(landscape_image, '20x20#', crop_x_ratio: 0.1, crop_y_ratio: 0) }
+      it { landscape_image.must_have_width 20 }
+      it { landscape_image.must_have_height 20 }
+    end
+
     describe 'NNxNN# - square' do
       before { processor.call(landscape_image, '20x20#') }
       it { landscape_image.must_have_width 20 }

@@ -1,12 +1,26 @@
 module DragonflyLibvips
-  class Dimensions < Struct.new(:geometry, :orig_w, :orig_h)
+  class Dimensions < Struct.new(:geometry, :orig_w, :orig_h, :crop_x_ratio, :crop_y_ratio)
     def self.call(*args)
       new(*args).call
     end
 
     def call
-      return OpenStruct.new(width: dimensions.width, height: dimensions.height, crop: true) if crop_image?
-      return OpenStruct.new(width: orig_w, height: orig_h, scale: 1) if do_not_resize_if_image_smaller_than_requested? || do_not_resize_if_image_larger_than_requested?
+      if crop_image?
+        return OpenStruct.new(width: precrop_width,
+                              height: precrop_height,
+                              crop_width: dimensions.width,
+                              crop_height: dimensions.height,
+                              crop_x: crop_x_ratio ? dimensions.width * crop_x_ratio.to_f : nil,
+                              crop_y: crop_y_ratio ? dimensions.height * crop_y_ratio.to_f : nil,
+                              crop: true)
+      end
+
+      if do_not_resize_if_image_smaller_than_requested? || do_not_resize_if_image_larger_than_requested?
+        return OpenStruct.new(width: orig_w,
+                              height: orig_h,
+                              scale: 1)
+      end
+
       OpenStruct.new(width: width, height: height, scale: scale)
     end
 
@@ -69,6 +83,20 @@ module DragonflyLibvips
 
     def crop_image?
       geometry.end_with? '#'
+    end
+
+    def precrop_width
+      if orig_w.to_f / orig_h.to_f > dimensions.width / dimensions.height
+        # original is wider than the required crop rectangle -> reduce height
+        orig_w.to_f * dimensions.height / orig_h.to_f
+      else
+        # original is narrower than the required crop rectangle -> reduce width
+        dimensions.width
+      end
+    end
+
+    def precrop_height
+      precrop_width * orig_h.to_f / orig_w.to_f
     end
   end
 end

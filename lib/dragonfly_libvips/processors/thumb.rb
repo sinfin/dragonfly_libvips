@@ -45,7 +45,11 @@ module DragonflyLibvips
         img = ::Vips::Image.new_from_file(filename, DragonflyLibvips.symbolize_keys(input_options))
 
         dimensions = case geometry
-                     when RESIZE_GEOMETRY then Dimensions.call(geometry, img.width, img.height)
+                     when RESIZE_GEOMETRY then Dimensions.call(geometry,
+                                                               img.width,
+                                                               img.height,
+                                                               options.fetch('crop_x_ratio', nil),
+                                                               options.fetch('crop_y_ratio', nil))
                      else raise ArgumentError, "Didn't recognise the geometry string: #{geometry}"
         end
 
@@ -64,12 +68,26 @@ module DragonflyLibvips
         end
 
 
-        thumbnail_options['crop'] = options.fetch(:crop, :attention) if dimensions[:crop]
-
         filename += "[page=#{input_options[:page]}]" if content.mime_type == 'application/pdf'
 
         thumbnail_options = thumbnail_options.each_with_object({}) { |(k, v), memo| memo[k.to_sym] = v } # symbolize
-        thumb = ::Vips::Image.thumbnail(filename, dimensions.width.ceil, DragonflyLibvips.symbolize_keys(thumbnail_options))
+
+        thumb = ::Vips::Image.thumbnail(filename,
+                                        dimensions.width.ceil,
+                                        DragonflyLibvips.symbolize_keys(thumbnail_options))
+
+        if dimensions[:crop]
+          if dimensions[:crop_x] && dimensions[:crop_y]
+            thumb = thumb.crop(dimensions[:crop_x],
+                               dimensions[:crop_y],
+                               dimensions.crop_width.ceil,
+                               dimensions.crop_height.ceil,)
+          else
+            thumb = thumb.smartcrop(dimensions.crop_width.ceil,
+                                    dimensions.crop_height.ceil,
+                                    interesting: options.fetch('crop_interesting', :attention))
+          end
+        end
 
         content.update(
           thumb.write_to_buffer(".#{format}", DragonflyLibvips.symbolize_keys(output_options)),
