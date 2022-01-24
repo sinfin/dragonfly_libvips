@@ -10,6 +10,7 @@ describe DragonflyLibvips::Processors::Thumb do
   let(:gif) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample.gif')) }
   let(:anim_gif) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_anim.gif')) }
   let(:crop_tester) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_colors.png')) } # 512x512
+  let(:portrait_crop_tester) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_colors_portrait.png')) } # 512x512
   let(:landscape_image) { Dragonfly::Content.new(app, SAMPLES_DIR.join('landscape_sample.png')) } # 355x280
   let(:processor) { DragonflyLibvips::Processors::Thumb.new }
 
@@ -136,7 +137,10 @@ describe DragonflyLibvips::Processors::Thumb do
       before { processor.call(crop_tester, '100x100#c') }
       it { _(crop_tester).must_have_width 100 }
       it { _(crop_tester).must_have_height 100 }
+      it { _(crop_tester).must_have_color_at(10, 10, PINK) }
       it { _(crop_tester).must_have_color_at(10, 75, ORANGE) }
+      it { _(crop_tester).must_have_color_at(75, 10, PURPLE) }
+      it { _(crop_tester).must_have_color_at(75, 75, GREEN) }
     end
 
     describe 'MMxNN#ne, portrait' do
@@ -144,6 +148,16 @@ describe DragonflyLibvips::Processors::Thumb do
       it { _(crop_tester).must_have_width 100 }
       it { _(crop_tester).must_have_height 100 }
       it { _(crop_tester).must_have_color_at(10, 75, PURPLE) }
+    end
+
+    describe 'MMxNN#c for portrait image with exact width' do
+      before { processor.call(portrait_crop_tester, '500x800#c') }
+      it { _(portrait_crop_tester).must_have_width 500 }
+      it { _(portrait_crop_tester).must_have_height 800 }
+      it { _(portrait_crop_tester).must_have_color_at(10, 10, PINK) }
+      it { _(portrait_crop_tester).must_have_color_at(10, 475, ORANGE) }
+      it { _(portrait_crop_tester).must_have_color_at(275, 10, PURPLE) }
+      it { _(portrait_crop_tester).must_have_color_at(275, 475, GREEN) }
     end
   end
 
