@@ -9,8 +9,9 @@ describe DragonflyLibvips::Processors::Thumb do
   let(:cmyk) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_cmyk.jpg')) }
   let(:gif) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample.gif')) }
   let(:anim_gif) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_anim.gif')) }
-  let(:crop_tester) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_colors.png')) } # 512x512
+  let(:square_crop_tester) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_colors_square.png')) } # 512x512
   let(:portrait_crop_tester) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_colors_portrait.png')) } # 512x512
+  let(:landscape_crop_tester) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_colors_landscape.png')) } # 512x512
   let(:landscape_image) { Dragonfly::Content.new(app, SAMPLES_DIR.join('landscape_sample.png')) } # 355x280
   let(:processor) { DragonflyLibvips::Processors::Thumb.new }
 
@@ -102,62 +103,152 @@ describe DragonflyLibvips::Processors::Thumb do
   end
 
   describe 'cropping' do
-    describe "crops image with offsets" do
-      before { processor.call(crop_tester, '128x128+64+64') }
-      it { _(crop_tester).must_have_width 128 }
-      it { _(crop_tester).must_have_height 128 }
-      it { _(crop_tester).must_have_color_at 10, 10, PINK }
-      it { _(crop_tester).must_have_color_at 64, 64, TRANSPARENT }
+    describe 'square' do
+      describe 'crop' do
+        describe "MMxNN+64+64" do
+          before { processor.call(square_crop_tester, '128x128+64+64') }
+          it { _(square_crop_tester).must_have_width 128 }
+          it { _(square_crop_tester).must_have_height 128 }
+          it { _(square_crop_tester).must_have_color_at 10, 10, PINK }
+          it { _(square_crop_tester).must_have_color_at 63, 63, TRANSPARENT }
+        end
+
+        describe 'MMxNN+10+20, landscape' do
+          before { processor.call(square_crop_tester, '70x55+10+20') }
+          it { _(square_crop_tester).must_have_width 70 }
+          it { _(square_crop_tester).must_have_height 55 }
+          it { _(square_crop_tester).must_have_color_at 0, 0, PINK }
+          it { _(square_crop_tester).must_have_color_at 69, 54, PINK }
+        end
+
+        describe 'MMxNN+10+20, portrait' do
+          before { processor.call(square_crop_tester, '55x70+10+20') }
+          it { _(square_crop_tester).must_have_width 55 }
+          it { _(square_crop_tester).must_have_height 70 }
+          it { _(square_crop_tester).must_have_color_at 0, 0, PINK }
+          it { _(square_crop_tester).must_have_color_at 54, 69, PINK }
+        end
+      end
+
+      describe 'crop and resize' do
+        describe 'MMxNN#c' do
+          before { processor.call(square_crop_tester, '100x100#c') }
+          it { _(square_crop_tester).must_have_width 100 }
+          it { _(square_crop_tester).must_have_height 100 }
+          it { _(square_crop_tester).must_have_color_at(10, 10, PINK) }
+          it { _(square_crop_tester).must_have_color_at(10, 60, ORANGE) }
+          it { _(square_crop_tester).must_have_color_at(60, 10, PURPLE) }
+          it { _(square_crop_tester).must_have_color_at(60, 60, GREEN) }
+        end
+
+        describe 'MMxNN#ne, portrait crop' do
+          before { processor.call(square_crop_tester, '100x127#ne') }
+          it { _(square_crop_tester).must_have_width 100 }
+          it { _(square_crop_tester).must_have_height 127 }
+          it { _(square_crop_tester).must_have_color_at(10, 10, PINK) }
+          it { _(square_crop_tester).must_have_color_at(10, 80, ORANGE) }
+          it { _(square_crop_tester).must_have_color_at(60, 10, PURPLE) }
+          it { _(square_crop_tester).must_have_color_at(60, 80, GREEN) }
+        end
+      end
     end
 
-    describe "crops image with gravity" do
-      before { processor.call(crop_tester, '128x128#ne') }
-      it { _(crop_tester).must_have_width 128 }
-      it { _(crop_tester).must_have_height 128 }
-      it { _(crop_tester).must_have_color_at 10, 10, PURPLE }
-      it { _(crop_tester).must_have_color_at 5, 120, TRANSPARENT }
-      it { _(crop_tester).must_have_color_at 0, 100, BLACK }
+    describe 'landscape' do
+      describe 'crop' do
+        describe "MMxNN+64+64" do
+          before { processor.call(landscape_crop_tester, '128x128+64+64') }
+          it { _(landscape_crop_tester).must_have_width 128 }
+          it { _(landscape_crop_tester).must_have_height 128 }
+          it { _(landscape_crop_tester).must_have_color_at 0, 0, PINK }
+          it { _(landscape_crop_tester).must_have_color_at 127, 127, PINK }
+        end
+
+        describe 'MMxNN+10+20, landscape' do
+          before { processor.call(landscape_crop_tester, '70x55+10+20') }
+          it { _(landscape_crop_tester).must_have_width 70 }
+          it { _(landscape_crop_tester).must_have_height 55 }
+          it { _(landscape_crop_tester).must_have_color_at 0, 0, PINK }
+          it { _(landscape_crop_tester).must_have_color_at 69, 54, PINK }
+        end
+
+        describe 'MMxNN+10+20, portrait' do
+          before { processor.call(landscape_crop_tester, '55x70+10+20') }
+          it { _(landscape_crop_tester).must_have_width 55 }
+          it { _(landscape_crop_tester).must_have_height 70 }
+          it { _(landscape_crop_tester).must_have_color_at 0, 0, PINK }
+          it { _(landscape_crop_tester).must_have_color_at 54, 69, PINK }
+        end
+      end
+
+      describe 'crop and resize' do
+        describe 'MMxNN#c' do
+          before { processor.call(landscape_crop_tester, '100x100#c') }
+          it { _(landscape_crop_tester).must_have_width 100 }
+          it { _(landscape_crop_tester).must_have_height 100 }
+          it { _(landscape_crop_tester).must_have_color_at(10, 10, PINK) }
+          it { _(landscape_crop_tester).must_have_color_at(10, 60, ORANGE) }
+          it { _(landscape_crop_tester).must_have_color_at(60, 10, PURPLE) }
+          it { _(landscape_crop_tester).must_have_color_at(60, 60, GREEN) }
+        end
+
+        describe 'MMxNN#ne, portrait crop' do
+          before { processor.call(landscape_crop_tester, '100x127#ne') }
+          it { _(landscape_crop_tester).must_have_width 100 }
+          it { _(landscape_crop_tester).must_have_height 127 }
+          it { _(landscape_crop_tester).must_have_color_at(10, 10, PURPLE) }
+          it { _(landscape_crop_tester).must_have_color_at(10, 80, GREEN) }
+        end
+      end
     end
 
-    describe 'MMxNN+10+20, landscape' do
-      before { processor.call(landscape_image, '70x55+10+20') }
-      it { _(landscape_image).must_have_width 70 }
-      it { _(landscape_image).must_have_height 55 }
-    end
+    describe 'portrait' do
+      describe 'crop' do
+        describe "MMxNN+64+64" do
+          before { processor.call(portrait_crop_tester, '128x128+64+64') }
+          it { _(portrait_crop_tester).must_have_width 128 }
+          it { _(portrait_crop_tester).must_have_height 128 }
+          it { _(portrait_crop_tester).must_have_color_at 0, 0, PINK }
+          it { _(portrait_crop_tester).must_have_color_at 127, 127, PINK }
+        end
 
-    describe 'MMxNN+10+20, portrait' do
-      before { processor.call(image, '55x70+10+20') }
-      it { _(image).must_have_width 55 }
-      it { _(image).must_have_height 70 }
-    end
-  end
+        describe 'MMxNN+10+20, landscape' do
+          before { processor.call(portrait_crop_tester, '70x55+10+20') }
+          it { _(portrait_crop_tester).must_have_width 70 }
+          it { _(portrait_crop_tester).must_have_height 55 }
+          it { _(portrait_crop_tester).must_have_color_at 0, 0, PINK }
+          it { _(portrait_crop_tester).must_have_color_at 69, 54, PINK }
+        end
 
-  describe 'crop and resize' do
-    describe 'MMxNN#c' do
-      before { processor.call(crop_tester, '100x100#c') }
-      it { _(crop_tester).must_have_width 100 }
-      it { _(crop_tester).must_have_height 100 }
-      it { _(crop_tester).must_have_color_at(10, 10, PINK) }
-      it { _(crop_tester).must_have_color_at(10, 75, ORANGE) }
-      it { _(crop_tester).must_have_color_at(75, 10, PURPLE) }
-      it { _(crop_tester).must_have_color_at(75, 75, GREEN) }
-    end
+        describe 'MMxNN+10+20, portrait' do
+          before { processor.call(portrait_crop_tester, '55x70+10+20') }
+          it { _(portrait_crop_tester).must_have_width 55 }
+          it { _(portrait_crop_tester).must_have_height 70 }
+          it { _(portrait_crop_tester).must_have_color_at 0, 0, PINK }
+          it { _(portrait_crop_tester).must_have_color_at 54, 69, PINK }
+        end
+      end
 
-    describe 'MMxNN#ne, portrait' do
-      before { processor.call(crop_tester, '100x127#ne') }
-      it { _(crop_tester).must_have_width 100 }
-      it { _(crop_tester).must_have_height 100 }
-      it { _(crop_tester).must_have_color_at(10, 75, PURPLE) }
-    end
+      describe 'crop and resize' do
+        describe 'MMxNN#c' do
+          before { processor.call(portrait_crop_tester, '100x100#c') }
+          it { _(portrait_crop_tester).must_have_width 100 }
+          it { _(portrait_crop_tester).must_have_height 100 }
+          it { _(portrait_crop_tester).must_have_color_at(10, 10, PINK) }
+          it { _(portrait_crop_tester).must_have_color_at(10, 60, ORANGE) }
+          it { _(portrait_crop_tester).must_have_color_at(60, 10, PURPLE) }
+          it { _(portrait_crop_tester).must_have_color_at(60, 60, GREEN) }
+        end
 
-    describe 'MMxNN#c for portrait image with exact width' do
-      before { processor.call(portrait_crop_tester, '500x800#c') }
-      it { _(portrait_crop_tester).must_have_width 500 }
-      it { _(portrait_crop_tester).must_have_height 800 }
-      it { _(portrait_crop_tester).must_have_color_at(10, 10, PINK) }
-      it { _(portrait_crop_tester).must_have_color_at(10, 475, ORANGE) }
-      it { _(portrait_crop_tester).must_have_color_at(275, 10, PURPLE) }
-      it { _(portrait_crop_tester).must_have_color_at(275, 475, GREEN) }
+        describe 'MMxNN#ne, portrait crop' do
+          before { processor.call(portrait_crop_tester, '100x127#ne') }
+          it { _(portrait_crop_tester).must_have_width 100 }
+          it { _(portrait_crop_tester).must_have_height 127 }
+          it { _(portrait_crop_tester).must_have_color_at(10, 10, PINK) }
+          it { _(portrait_crop_tester).must_have_color_at(75, 10, PURPLE) }
+          it { _(portrait_crop_tester).must_have_color_at(10, 126, ORANGE) }
+          it { _(portrait_crop_tester).must_have_color_at(75, 126, GREEN) }
+        end
+      end
     end
   end
 

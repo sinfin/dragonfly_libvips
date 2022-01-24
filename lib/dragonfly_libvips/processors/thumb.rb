@@ -26,6 +26,7 @@ module DragonflyLibvips
             cmyk:  img.get('interpretation') == :cmyk,
             jpeg:  content.mime_type == 'image/jpeg'
           )
+
           case process
             when :shrink
               thumbnail_options.except!(:height, :size)
@@ -33,8 +34,11 @@ module DragonflyLibvips
               thumbnail_options[:yshrink] = dimensions.y_scale
               img.shrink(dimensions.x_scale, dimensions.y_scale, **thumbnail_options)
             when :crop
-              thumbnail_options.except!(:height, :size, :no_rotate)
-              img.crop(dimensions.x, dimensions.y, dimensions.width, dimensions.height, **thumbnail_options)
+              if dimensions.resize_width
+                img = img.thumbnail_image(dimensions.resize_width.ceil, size: :both, height: dimensions.resize_height)
+              end
+
+              img.crop(dimensions.x, dimensions.y, dimensions.width, dimensions.height)
             else
               if geometry.include?('^')
                 thumbnail_options.delete(:crop)

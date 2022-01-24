@@ -165,57 +165,176 @@ describe DragonflyLibvips::Dimensions do
     describe 'with x offset' do
       let(:geometry) {'200x200+50+0'}
 
-      it {_(result.x).must_equal 50}
-      it {_(result.y).must_equal 0}
+      it('result.x') {_(result.x).must_equal 50}
+      it('result.y') {_(result.y).must_equal 0}
     end
 
     describe 'with y offset' do
       let(:geometry) {'200x200+0+50'}
 
-      it {_(result.x).must_equal 0 }
-      it {_(result.y).must_equal 50}
+      it('result.x') {_(result.x).must_equal 0 }
+      it('result.y') {_(result.y).must_equal 50}
     end
   end
 
   describe 'gravity' do
-    let(:orig_w) { 1000 }
-    let(:orig_h) { 1000 }
+    describe 'square' do
+      let(:orig_w) { 300 }
+      let(:orig_h) { 300 }
 
-    describe 'centre' do
-      let(:geometry) {'200x200#c'}
+      describe 'centre' do
+        let(:geometry) {'200x200#c'}
 
-      it { _(result.x).must_equal 400 }
-      it { _(result.y).must_equal 400 }
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 0 }
+        it('result.y') { _(result.y).must_equal 0 }
+      end
+
+      describe 'north' do
+        let(:geometry) {'200x200#n'}
+
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 0 }
+        it('result.y') { _(result.y).must_equal 0 }
+      end
+
+      describe 'west' do
+        let(:geometry) {'200x200#w'}
+
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 0 }
+        it('result.y') { _(result.y).must_equal 0 }
+      end
+
+      describe 'north east' do
+        let(:geometry) {'200x200#ne'}
+
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 0 }
+        it('result.y') { _(result.y).must_equal 0 }
+      end
+
+      describe 'south west' do
+        let(:geometry) {'200x200#sw'}
+
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 0 }
+        it('result.y') { _(result.y).must_equal 0 }
+      end
     end
 
-    describe 'north' do
-      let(:geometry) {'200x200#n'}
+    describe 'portrait' do
+      let(:orig_w) { 300 }
+      let(:orig_h) { 600 }
 
-      it { _(result.width).must_equal 200 }
-      it { _(result.height).must_equal 200 }
-      it { _(result.x).must_equal 400 }
-      it { _(result.y).must_equal 0 }
+      describe 'centre' do
+        let(:geometry) {'200x200#c'}
+
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 0 }
+        it('result.y') { _(result.y).must_equal 100 }
+      end
+
+      describe 'north' do
+        let(:geometry) {'200x200#n'}
+
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 0 }
+        it('result.y') { _(result.y).must_equal 0 }
+      end
+
+      describe 'west' do
+        let(:geometry) {'200x200#w'}
+
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 0 }
+        it('result.y') { _(result.y).must_equal 100 }
+      end
+
+      describe 'north east' do
+        let(:geometry) {'200x200#ne'}
+
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 0 }
+        it('result.y') { _(result.y).must_equal 0 }
+      end
+
+      describe 'south west' do
+        let(:geometry) {'200x200#sw'}
+
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 0 }
+        it('result.y') { _(result.y).must_equal 200 }
+      end
+
+      describe 'non-square crop' do
+        let(:geometry) {'100x127#c'}
+
+        it('result.width') { _(result.width).must_equal 100 }
+        it('result.height') { _(result.height).must_equal 127 }
+        it('result.x') { _(result.x).must_equal 0 }
+        it('result.y') { _(result.y).must_equal 36.5 }
+      end
     end
 
-    describe 'west' do
-      let(:geometry) {'200x200#w'}
+    describe 'landscape' do
+      let(:orig_w) { 600 }
+      let(:orig_h) { 300 }
 
-      it { _(result.x).must_equal 0 }
-      it { _(result.y).must_equal 400 }
-    end
+      describe 'centre' do
+        let(:geometry) {'200x200#c'}
 
-    describe 'north east' do
-      let(:geometry) {'200x200#ne'}
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 100 }
+        it('result.y') { _(result.y).must_equal 0 }
+      end
 
-      it { _(result.x).must_equal 800 }
-      it { _(result.y).must_equal 0 }
-    end
+      describe 'north' do
+        let(:geometry) {'200x200#n'}
 
-    describe 'south west' do
-      let(:geometry) {'200x200#sw'}
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 100 }
+        it('result.y') { _(result.y).must_equal 0 }
+      end
 
-      it { _(result.x).must_equal 0 }
-      it { _(result.y).must_equal 800 }
+      describe 'west' do
+        let(:geometry) {'200x200#w'}
+
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 0 }
+        it('result.y') { _(result.y).must_equal 0 }
+      end
+
+      describe 'north east' do
+        let(:geometry) {'200x200#ne'}
+
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 200 }
+        it('result.y') { _(result.y).must_equal 0 }
+      end
+
+      describe 'south west' do
+        let(:geometry) {'200x200#sw'}
+
+        it('result.width') { _(result.width).must_equal 200 }
+        it('result.height') { _(result.height).must_equal 200 }
+        it('result.x') { _(result.x).must_equal 0 }
+        it('result.y') { _(result.y).must_equal 0 }
+      end
     end
   end
 end

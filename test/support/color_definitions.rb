@@ -1,4 +1,4 @@
-# These colors are used in sample_colors.png, and can be checked to test cropping
+# These colors are used in sample_colors_square.png, and can be checked to test cropping
 BLACK = [0, 0, 0, 255]
 TRANSPARENT = [0, 0, 0, 0]
 PINK = [255, 0, 127, 255]
