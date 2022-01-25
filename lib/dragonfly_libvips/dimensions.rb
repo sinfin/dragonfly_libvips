@@ -120,7 +120,7 @@ module DragonflyLibvips
     end
 
     def crop_without_gravity?
-      !(x_offset.zero? && y_offset.zero?)
+      !(x_offset.nil? && y_offset.nil?)
     end
 
     def fill_width

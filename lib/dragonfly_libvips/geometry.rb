@@ -9,7 +9,13 @@ module DragonflyLibvips
       case geometry
         when thumb_geometry
           matches = geometry.match(thumb_geometry).named_captures.compact
-          %w[geom_w geom_h x_offset y_offset area].each { |key| matches[key] = matches.fetch(key, nil).to_i }
+
+          %w[geom_w geom_h x_offset y_offset area].each do |key|
+            m = matches.fetch(key, nil)
+            m = m.to_i unless m.nil?
+            matches[key] = m
+          end
+
           matches
         else raise ArgumentError, "Didn't recognise the geometry string: #{geometry}"
       end

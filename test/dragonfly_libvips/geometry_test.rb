@@ -51,6 +51,14 @@ describe DragonflyLibvips::Dimensions do
         it { result.y.must_equal '20' }
       end
 
+      describe 'NNxNN+0+0' do
+        let(:geometry) { '250x300+0+0' }
+        it { result.geom_w.must_equal 250 }
+        it { result.geom_h.must_equal 300 }
+        it { result.x.must_equal '0' }
+        it { result.y.must_equal '0' }
+      end
+
       describe 'NNxNN-x+y' do
         let(:geometry) { '250x300-10+20' }
         it { result.geom_w.must_equal 250 }

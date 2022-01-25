@@ -19,7 +19,7 @@ module DragonflyLibvips
           dimensions = Dimensions.call(orig_w: img.width, orig_h: img.height, **Geometry.call(geometry))
           process = :shrink unless (dimensions.to_h.keys & SHRINK_KEYS).empty?
           process = :crop unless (dimensions.to_h.keys & CROP_KEYS).empty?
-          process = process ||= :thumbnail_image
+          process ||= :thumbnail_image
 
           thumbnail_options = set_thumbnail_options(
             input_options, dimensions,
