@@ -16,7 +16,7 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].sort.each { |f| require f }
 # warning: instance variable @tempfile not initialized
 $VERBOSE = nil
 
-Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
+Minitest::Reporters.use! Minitest::Reporters::DefaultReporter.new
 
 def test_app(name = nil)
   Dragonfly::App.instance(name).tap do |app|
