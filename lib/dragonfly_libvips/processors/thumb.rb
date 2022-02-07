@@ -35,7 +35,7 @@ module DragonflyLibvips
               img.shrink(dimensions.x_scale, dimensions.y_scale, **thumbnail_options)
             when :crop
               if dimensions.resize_width
-                img = img.thumbnail_image(dimensions.resize_width.ceil, size: :both, height: dimensions.resize_height)
+                img = img.thumbnail_image(dimensions.resize_width.ceil, size: :both, height: dimensions.resize_height.ceil)
               end
 
               img.crop(dimensions.x, dimensions.y, dimensions.width, dimensions.height)

@@ -13,6 +13,7 @@ describe DragonflyLibvips::Processors::Thumb do
   let(:portrait_crop_tester) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_colors_portrait.png')) } # 512x512
   let(:landscape_crop_tester) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_colors_landscape.png')) } # 512x512
   let(:landscape_image) { Dragonfly::Content.new(app, SAMPLES_DIR.join('landscape_sample.png')) } # 355x280
+  let(:specific_1440x760) { Dragonfly::Content.new(app, SAMPLES_DIR.join('specific_1440x760.png')) } # 355x280
   let(:processor) { DragonflyLibvips::Processors::Thumb.new }
 
   it 'raises an error if an unrecognized string is given' do
@@ -272,6 +273,14 @@ describe DragonflyLibvips::Processors::Thumb do
           it('must_have_color_at(10, 126, ORANGE)') { _(portrait_crop_tester).must_have_color_at(10, 126, ORANGE) }
           it('must_have_color_at(75, 126, GREEN)') { _(portrait_crop_tester).must_have_color_at(75, 126, GREEN) }
         end
+      end
+    end
+
+    describe 'specific broken cases' do
+      describe '1200x630#c on a 1440x760 image' do
+        before { processor.call(specific_1440x760, '1200x630#c') }
+        it('width') { _(specific_1440x760).must_have_width 1200 }
+        it('height') { _(specific_1440x760).must_have_height 630 }
       end
     end
   end
