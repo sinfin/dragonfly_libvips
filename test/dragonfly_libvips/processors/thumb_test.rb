@@ -13,7 +13,8 @@ describe DragonflyLibvips::Processors::Thumb do
   let(:portrait_crop_tester) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_colors_portrait.png')) } # 512x512
   let(:landscape_crop_tester) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_colors_landscape.png')) } # 512x512
   let(:landscape_image) { Dragonfly::Content.new(app, SAMPLES_DIR.join('landscape_sample.png')) } # 355x280
-  let(:specific_1440x760) { Dragonfly::Content.new(app, SAMPLES_DIR.join('specific_1440x760.png')) } # 355x280
+  let(:specific_1440x760) { Dragonfly::Content.new(app, SAMPLES_DIR.join('specific_1440x760.png')) }
+  let(:specific_640x427) { Dragonfly::Content.new(app, SAMPLES_DIR.join('specific_640x427.png')) }
   let(:processor) { DragonflyLibvips::Processors::Thumb.new }
 
   it 'raises an error if an unrecognized string is given' do
@@ -281,6 +282,12 @@ describe DragonflyLibvips::Processors::Thumb do
         before { processor.call(specific_1440x760, '1200x630#c') }
         it('width') { _(specific_1440x760).must_have_width 1200 }
         it('height') { _(specific_1440x760).must_have_height 630 }
+      end
+
+      describe '250x90 on a 640x427 image' do
+        before { processor.call(specific_640x427, '250x90') }
+        it('width') { _(specific_640x427).must_have_width 135 }
+        it('height') { _(specific_640x427).must_have_height 90 }
       end
     end
   end

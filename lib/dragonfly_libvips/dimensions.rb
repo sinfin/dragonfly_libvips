@@ -34,7 +34,7 @@ module DragonflyLibvips
     private
 
     def width
-      if landscape?
+      if as_landscape?
         dimensions_specified_by_width? ? dimensions.width : dimensions.height / aspect_ratio
       else
         dimensions_specified_by_height? ? dimensions.height / aspect_ratio : dimensions.width
@@ -42,7 +42,7 @@ module DragonflyLibvips
     end
 
     def height
-      if landscape?
+      if as_landscape?
         dimensions_specified_by_width? ? dimensions.width * aspect_ratio : dimensions.height
       else
         dimensions_specified_by_height? ? dimensions.height : dimensions.width * aspect_ratio
@@ -77,12 +77,12 @@ module DragonflyLibvips
       dimensions.height.positive?
     end
 
-    def landscape?
-      aspect_ratio <= 1.0
-    end
-
-    def portrait?
-      !landscape?
+    def as_landscape?
+      if geom_h && geom_w
+        aspect_ratio <= (geom_h.to_f / geom_w)
+      else
+        aspect_ratio <= 1
+      end
     end
 
     def resize
