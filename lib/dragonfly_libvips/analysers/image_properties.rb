@@ -14,12 +14,29 @@ module DragonflyLibvips
         input_options['autorotate'] = true if content.mime_type == 'image/jpeg'
         input_options['dpi'] = DPI if content.mime_type == 'application/pdf'
 
-        img = ::Vips::Image.new_from_file(content.path, **DragonflyLibvips.symbolize_keys(**input_options))
+        img = begin
+          ::Vips::Image.new_from_file(content.path, **DragonflyLibvips.symbolize_keys(**input_options))
+        rescue ::Vips::Error => e
+          # If autorotate fails (e.g., file has wrong extension), retry without it
+          if input_options['autorotate'] && e.message.include?('autorotate')
+            input_options.delete('autorotate')
+            ::Vips::Image.new_from_file(content.path, **DragonflyLibvips.symbolize_keys(**input_options))
+          else
+            raise
+          end
+        end
 
         width = img.width
         height = img.height
         xres = img.xres
         yres = img.yres
+
+        # Check for progressive JPEG - only if the field exists (actual JPEG file)
+        progressive = begin
+          img.get_typeof('jpeg-multiscan') != 0 && img.get('jpeg-multiscan') != 0
+        rescue ::Vips::Error
+          false
+        end
 
         {
           'format' => content.ext.to_s,
@@ -27,7 +44,7 @@ module DragonflyLibvips
           'height' => height,
           'xres' => xres,
           'yres' => yres,
-          'progressive' => (content.mime_type == 'image/jpeg' && img.get('jpeg-multiscan') != 0)
+          'progressive' => progressive
         }
       end
     end

@@ -11,4 +11,16 @@ describe DragonflyLibvips::Analysers::ImageProperties do
   describe 'jpgs' do
     it { analyser.call(jpg)['progressive'].must_equal false }
   end
+
+  describe 'misnamed files (wrong extension)' do
+    # WebP file with .jpg extension - tests the autorotate fallback
+    let(:webp_as_jpg) { Dragonfly::Content.new(app, SAMPLES_DIR.join('sample_webp_misnamed.jpg')) }
+
+    it 'extracts dimensions even when file extension does not match content' do
+      result = analyser.call(webp_as_jpg)
+      result['width'].must_equal 280
+      result['height'].must_equal 355
+      result['format'].must_equal 'jpg'
+    end
+  end
 end
