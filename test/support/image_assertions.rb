@@ -17,7 +17,7 @@ def color_at(content, x, y)
   Vips::Image.new_from_file(content.path, access: :sequential).getpoint(x, y).map(&:to_i)
 end
 
-module MiniTest::Assertions
+module Minitest::Assertions
   [:width, :height, :format].each do |property|
     define_method "assert_#{property}" do |obj, value|
       assert_equal value, image_properties(obj)[property]
