@@ -45,7 +45,8 @@ module DragonflyLibvips
         output_options.delete('profile') if output_options[:profile].nil?
 
         output_options.delete('Q') unless format.to_s =~ /jpg|jpeg/i
-        output_options['format'] ||= format.to_s if format.to_s =~ /gif|bmp/i
+        # Note: 'format' option for GIF removed - not supported by libvips cgif writer
+        output_options['format'] ||= format.to_s if format.to_s =~ /bmp/i
         output_options['compression'] ||= get_compression_option(format.to_s) if format.to_s =~ /heif|avif/
         output_options
       end
@@ -64,4 +65,3 @@ module DragonflyLibvips
       end
   end
 end
-

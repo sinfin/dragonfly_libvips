@@ -16,6 +16,7 @@ describe DragonflyLibvips::Processors::Encode do
 
       DragonflyLibvips::SUPPORTED_OUTPUT_FORMATS.each do |output_format|
         it("#{format} to #{output_format}") do
+          skip "HEIC/HEIF/AVIF encoding not supported by system libvips" if CODEC_DEPENDENT_FORMATS.include?(output_format) && !heic_supported?
           _(content.encode(output_format).mime_type).must_equal Rack::Mime.mime_type(".#{output_format}")
           _(content.encode(output_format).size).must_be :>, 0
           _(content.encode(output_format).tempfile.path).must_match /\.#{output_format_short(output_format)}\z/

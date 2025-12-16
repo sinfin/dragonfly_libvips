@@ -23,11 +23,12 @@ module Minitest::Assertions
       assert_equal value, image_properties(obj)[property]
     end
 
-    def assert_color_at(obj, x, y, value)
-      assert_equal value, color_at(obj, x, y)
-    end
-
     Object.infect_an_assertion "assert_#{property}", "must_have_#{property}", :reverse
-    Object.infect_an_assertion "assert_color_at", "must_have_color_at", :reverse
   end
+
+  def assert_color_at(obj, x, y, value)
+    assert_equal value, color_at(obj, x, y)
+  end
+
+  Object.infect_an_assertion "assert_color_at", "must_have_color_at", :reverse
 end

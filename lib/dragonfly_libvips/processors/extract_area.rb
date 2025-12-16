@@ -6,10 +6,9 @@ module DragonflyLibvips
     class ExtractArea
       include DragonflyLibvips::Processors
 
-      def call(content, *args, **options)
-        wrap_process(content, *args, **options) do |img |
-          x, y, width, height = args
-          img = img.extract_area(x, y, width, height)
+      def call(content, x, y, width, height, options = {})
+        wrap_process(content, **options) do |img, **_input_options|
+          img.extract_area(x, y, width, height)
         end
       end
     end

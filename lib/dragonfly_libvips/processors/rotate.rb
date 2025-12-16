@@ -6,9 +6,9 @@ module DragonflyLibvips
     class Rotate
       include DragonflyLibvips::Processors
 
-      def call(content, degrees, **options)
-        wrap_process(content, degrees, **options) do |img|
-          img = img.rot("d#{degrees}")
+      def call(content, degrees, options = {})
+        wrap_process(content, **options) do |img, **_input_options|
+          img.rot("d#{degrees}")
         end
       end
     end
