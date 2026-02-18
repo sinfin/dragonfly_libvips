@@ -55,7 +55,9 @@ module DragonflyLibvips
       options[:height] = options.fetch('height', dimensions.height.ceil)  if dimensions.height
 
       if jpeg
-        if Vips.at_least_libvips?(8, 8)
+        if Vips.at_least_libvips?(8, 14)
+          # libvips 8.14+ auto-rotates by default, no option needed
+        elsif Vips.at_least_libvips?(8, 8)
           options[:no_rotate] = input_options.fetch('no_rotate', false)
         else
           options[:auto_rotate] = input_options.fetch('autorotate', true)
@@ -67,4 +69,3 @@ module DragonflyLibvips
     end
   end
 end
-
